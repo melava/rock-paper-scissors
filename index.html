@@ -11,71 +11,103 @@
     <body>
         <script>
             // Computer Play
+
             function computerPlay() {
                 let random = Math.floor(Math.random() * 3);
-                return random
+                let computerChoice;
+                switch (random) {
+                    case 0 : 
+                        computerChoice = 'rock';
+                        break
+                    case 1 : 
+                        computerChoice = 'paper';
+                        break
+                    case 2 : 
+                        computerChoice = 'scissors';
+                        break
+                }
+                return computerChoice
             }
 
-            let computerRandomChoice = computerPlay();
-            let computerSelection;
-
-            switch (computerRandomChoice) {
-                case 0 : 
-                    computerSelection = 'rock';
-                    break
-                case 1 : 
-                    computerSelection = 'paper';
-                    break
-                case 2 : 
-                    computerSelection = 'scissors';
-                    break
-            }
-
-            console.log(computerSelection);
+            //let computerSelection = computerPlay();
+            // console.log(computerSelection);
 
             // Player Selection
-            let playerSelection = prompt('Let\'s play Rock - Paper - Scissors! \n What do you choose?');
-            playerSelection = playerSelection.toLowerCase();
-            console.log(playerSelection);
+            function playerPlay() {
+                let playerChoice = prompt('Let\'s play Rock - Paper - Scissors! \n What do you choose?').toLowerCase();
+                while(playerChoice !== 'rock' && playerChoice !== 'paper' && playerChoice !== 'scissors') {
+                    alert('Please write "rock", "paper" or "scissors" to play.');
+                    playerChoice = prompt('Let\'s play Rock - Paper - Scissors! \n What do you choose?').toLowerCase();
+                
+                }
+                return playerChoice;
+            }
+
+            // let playerSelection = playerPlay();
+            // console.log(playerSelection);
+
 
             //Play a round
             let message;
-            let winner;
+            let roundWinner;
+
             function playRound(computer, player) {
                 if ((computer === 'rock' && player === 'rock') || (computer === 'paper' && player === 'paper') || (computer === 'scissors' && player === 'scissors')) {
-                    winner = 'none';
-                    return winner
+                    roundWinner = 'none';
+                    return roundWinner
                 } else if ((computer === 'rock' && player === 'scissors') || (computer === 'paper' && player === 'rock') || (computer === 'scissors' && player === 'paper')) {
-                    winner = 'Computer';
-                    return winner
+                    roundWinner = 'Computer';
+                    return roundWinner
                 } else if ((computer === 'scissors' && player === 'rock') || (computer === 'rock' && player === 'paper') || (computer === 'paper' && player === 'scissors')) {
-                    winner = 'Player';
-                    return winner
+                    roundWinner = 'Player';
+                    return roundWinner
                 }
             }
 
-            winner = playRound(computerSelection, playerSelection);
-            console.log(winner);
+            // roundWinner = playRound(computerSelection, playerSelection);
+            // console.log(roundWinner);
 
-            function announceWinner(winner, computerSelection, playerSelection) {
-                if (winner === 'Computer') {
-                    message = `The computer wins! ${computerSelection} beats ${playerSelection}`;
+            function announceWinner(roundWinner, computerSelection, playerSelection) {
+                if (roundWinner === 'Computer') {
+                    message = `The computer wins the round because ${computerSelection} beats ${playerSelection}.`;
                     return message
-                } else if (winner === 'Player') {
-                    message = `You win! ${playerSelection} beats ${computerSelection}`;
+                } else if (roundWinner === 'Player') {
+                    message = `You win the round because ${playerSelection} beats ${computerSelection}.`;
                     return message;
                 } else {
-                    message = `You both choose ${computerSelection}! This round is even`;
+                    message = `You both choose ${computerSelection}! This round is even.`;
                     return message;
                 }
             }
             
-            message = announceWinner(winner, computerSelection, playerSelection);
-            alert(message);
+            // message = announceWinner(roundWinner, computerSelection, playerSelection);
+            // alert(message);
 
             function game(){
-                
+                let roundWonByComputer = 0;
+                let roundWonByPlayer = 0;
+
+                // one of the gamer must win 5 rounds to win the game
+                while(roundWonByComputer < 5 && roundWonByPlayer < 5 ) {
+                    computerSelection = computerPlay();
+                    playerSelection = playerPlay();
+                    winner = playRound(computerSelection, playerSelection);
+                    if (roundWinner === 'Computer') {
+                        roundWonByComputer = roundWonByComputer + 1;
+                    } else if (roundWinner === 'Player') {
+                        roundWonByPlayer = roundWonByPlayer + 1; 
+                    }
+                    message = announceWinner(roundWinner, computerSelection, playerSelection);
+                    alert(message + ` The current result of the game is : \nComputer : ${roundWonByComputer} - Player : ${roundWonByPlayer}`);
+                    if (roundWonByComputer === 5) {
+                        alert("The computer is the winner of the game!")
+                    } else if (roundWonByPlayer === 5) {
+                        alert("The player is the winner of the game!")
+                    }
+                }
             }
+
+            game();
 
         </script>
     </body>
