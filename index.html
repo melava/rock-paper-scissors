@@ -6,12 +6,95 @@
         <title>Rock - Paper - Scissors</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
     </head>
     <body>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: rgb(245, 235, 225);
+                color: rgb(52, 62, 68);
+                line-height: 1.3em;
+            }
+
+            h1 {
+                text-align: center;
+                font-size: 35px;
+                margin: 40px auto 50px;
+            }
+
+            h2 {
+                font-style: italic;
+                margin: 10px 0;
+            }
+
+            div.rules, div.game {
+                margin: 30px 3vw;
+            }
+
+            .rules {
+                font-size: 15px;
+                text-align: justify;
+            }
+
+            ul {
+                list-style-type: circle;
+                padding: 0 25px
+            }
+
+            .game {
+                border: 1px solid rgb(52, 62, 68);
+                padding: 15px 3vw;
+                text-align: center;
+            }
+
+            button {
+                font-size: 18px;
+                background-color: rgb(59, 110, 141);
+                color: rgb(245, 235, 225);
+                border: 1px solid rgb(59, 110, 141);
+                padding: 5px 20px;
+            }
+
+            button:nth-of-type(2) {
+                margin: 0 15px;
+            }
+
+            button:hover {
+                opacity: 0.7;
+            }
+
+            .isHidden {
+                display: none;
+            }
+
+            .finalWinner {
+                background-color: rgb(211, 191, 166);
+                width: 100vw;
+                height: 100vh;
+                position: absolute;
+                top: 0px;
+                left: 0;
+                box-sizing: border-box;
+                padding: 30vh 0;
+            }
+
+            .finalWinner .name {
+                font-weight: bold;
+                font-size: 25px;
+            }
+
+            .smallText {
+                font-size: 12px;
+                padding-top: 50px;
+            }
+
+
+        </style>
+
         <h1>Rock - Paper - Scissors</h1>
-        <h2>Let's play a game together!</h2>
+        
         <div class="rules">
+            <h2>Let's play a game together!</h2>
             <p>Rock - paper - scissors is a simple game for 2 players. Each round, each player secretly choose one element to "battle" and then we compare the chosen elements to determine who wins the round. The game is won by the first player who wins 5 rounds.</p>
             <p>Here are the strenghts of each element:</p>
             <ul>
@@ -20,21 +103,29 @@
                 <li>Scissors cut the paper</li>
             </ul>
         </div>
-        <div class="round">
-            <p>Choose your element to compete against the computer:</p>
-            <button class="choice" value="0">Rock</button>
-            <button class="choice" value="1">Paper</button>
-            <button class="choice" value="2">Scissors</button>
 
-            <p>Your choice: <span class="playerRound"></span></p>
-            <p>The computer's choice: <span class="computerRound"></span></p>
-            <p class="roundWinner"></p>
-        </div>
-        <div class="score">
-            <h3>Total score:</h3>
-            <p>You: <span class="playerScore"></span></p>
-            <p>The Computer: <span class="computerScore"></span></p>
-            <h2 class="finalScore"></h2>
+        <div class="game">
+            <div class="round">
+                <h2>Time to play!</h2>
+                <p>Choose your element to compete against the computer:</p>
+                <button class="choice" value="rock">Rock</button>
+                <button class="choice" value="paper">Paper</button>
+                <button class="choice" value="scissors">Scissors</button>
+    
+                <p class="roundChoices"></p>
+                <p class="roundWinner"></p>
+            </div>
+    
+            <div class="score">
+                <h3 class="isHidden">Total score:</h3>
+                <p class="scoreTable"></p>
+                <div class="finalWinner isHidden">
+                    <p class="name"></p>
+                    <p class="lastRound"></p>
+                    <p class="lastScore"></p>
+                    <p class="smallText">Click anywhere to exit this screen and reset the game.</p>
+                </div>
+            </div>
         </div>
         
         <script>
@@ -83,60 +174,75 @@
                     return message;
                 }
             }
-        
-            
-            // Play a round
-            function playRound(e){
-                gameWinner.textContent = '';
-                let computerChoice = computerPlay();
-                let playerChoice = Number(e.target.value);
-                switch (playerChoice) {
-                    case 0 : 
-                        playerChoice = 'rock';
-                        break
-                    case 1 : 
-                        playerChoice = 'paper';
-                        break
-                    case 2 : 
-                        playerChoice = 'scissors';
-                        break
-                }
-                document.querySelector('.playerRound').textContent = playerChoice;
-                document.querySelector('.computerRound').textContent = computerChoice;
-                
-                let roundWinner = selectWinner(computerChoice, playerChoice);
-                let announceRoundWinner = announceWinner(roundWinner)
-                document.querySelector('.roundWinner').textContent = announceRoundWinner;
+
+            // Scoring system
+            function manageScore(computerChoice, playerChoice) {
                 if (roundWinner === "Computer") {
                     computerScore ++;
                 } else if (roundWinner === "Player") {
                     playerScore ++;
                 }
-                document.querySelector('.computerScore').textContent = computerScore;
-                document.querySelector('.playerScore').textContent = playerScore;
-                
-                if (computerScore == 5) {
-                    gameWinner.textContent = 'The computer wins the game!';
-                    computerScore = 0;
-                    playerScore = 0;
+                scoreTable.textContent = `You: ${playerScore} - The computer: ${computerScore}`;
+                if (scoreTable.textContent !== '') {
+                    totalScoreH3.classList.remove('isHidden');
                 }
-                if (playerScore == 5) {
-                    gameWinner.textContent = 'You win the game!'
-                    computerScore = 0;
-                    playerScore = 0;
+                
+                if (computerScore === 5 || playerScore === 5) {
+                    if (computerScore === 5) {
+                        endDiv.classList.remove('isHidden');
+                        winnerName.textContent = `The computer wins the game!`; 
+                    } else {
+                        endDiv.classList.remove('isHidden');
+                        winnerName.textContent = `Congratulation, you win the game!`
+                    }
+                    lastRound.textContent = `You picked ${playerChoice} and the computer picked ${computerChoice}`;
+                    lastScore.textContent = `You: ${playerScore} - The computer: ${computerScore}`;
                 }
             }
 
+            // Reset the game
+            function endGame() {
+                endDiv.classList.add('isHidden');
+                totalScoreH3.classList.add('isHidden');
+                scoreTable.textContent = '';
+                roundChoices.textContent = '';
+                roundWinnerDiv.textContent = '';
+                computerScore = 0;
+                playerScore = 0;
+            }
+        
+            
+            // Play a round
+            function playRound(e){
+                let computerChoice = computerPlay();
+                let playerChoice = e.target.value;
+                roundChoices.textContent = `You picked ${playerChoice} and the computer picked ${computerChoice}`;
+                
+                let roundWinner = selectWinner(computerChoice, playerChoice);
+                let announceRoundWinner = announceWinner(roundWinner)
+                roundWinnerDiv.textContent = announceRoundWinner;
+
+                manageScore(computerChoice, playerChoice);
+            }
 
             let computerScore = 0;
             let playerScore = 0;
-            let gameWinner = document.querySelector('.finalScore');
+            let roundChoices = document.querySelector('.roundChoices');
+            let roundWinnerDiv = document.querySelector('.roundWinner');
+            let totalScoreH3 = document.querySelector('.score h3');
+            let scoreTable = document.querySelector('.scoreTable');
+            let winnerName = document.querySelector('.name');
+            let lastRound = document.querySelector('.lastRound');
+            let lastScore = document.querySelector('.lastScore');
+
+            let endDiv = document.querySelector('.finalWinner');
+            endDiv.addEventListener('click', endGame);
+
             let buttons = document.querySelectorAll('button');
             buttons.forEach(button => {
                 button.addEventListener('click', playRound);
             });
             
-
         </script>
     </body>
 </html>
